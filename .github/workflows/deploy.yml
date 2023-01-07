@@ -4,8 +4,16 @@ on:
     branches:
       - main
       - dev
+env: # You can define environment variables in workflow level (all jobs & steps can access these)
+  MONGODB_DB_NAME: github-actions-demo-db
 jobs:
   test:
+    env: # You can define environment variables in jobs level (only this job & its steps can access these)
+      MONGODB_CLUSTER_ADDRESS: cluster0.qxejqdh.mongodb.net
+      # Define secrets on GitHub settings first and use them for storing critical informations.
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }} # Access github secrets via "secrets" context 
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }} # Access github secrets via "secrets" context 
+      PORT: 8080
     runs-on: ubuntu-latest
     steps:
       - name: Get Code
@@ -18,17 +26,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run server
-        run: npm start & npx wait-on http://127.0.0.1:XYZ
+        run: npm start & npx wait-on http://127.0.0.1:$PORT # I used PORT environment variable' value here.
       - name: Run tests
         run: npm test
       - name: Output information
-        run: |
-          echo ""
+        run: | # won't show secrets' real value on github output after job finished
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
   deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Output information
-        run: |
-          echo ""
-          echo ""
+        run: | # won't show secrets' real value on github output after job finished
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
+          echo "MONGODB_DB_NAME: $MONGODB_DB_NAME"
