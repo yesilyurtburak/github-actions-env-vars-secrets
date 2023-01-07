@@ -8,6 +8,7 @@ env: # You can define environment variables in workflow level (all jobs & steps 
   MONGODB_DB_NAME: github-actions-demo-db
 jobs:
   test:
+    environment: testing
     env: # You can define environment variables in jobs level (only this job & its steps can access these)
       MONGODB_CLUSTER_ADDRESS: cluster0.qxejqdh.mongodb.net
       # Define secrets on GitHub settings first and use them for storing critical informations.
